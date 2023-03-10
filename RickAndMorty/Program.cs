@@ -1,3 +1,4 @@
+using RickAndMorty.Cache;
 using RickAndMorty.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 builder.Services.AddTransient<IRickAndMortyService, RickAndMortyService>();
+builder.Services.AddSingleton<IRequestCache, RequestCache>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
