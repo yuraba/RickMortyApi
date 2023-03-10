@@ -25,26 +25,12 @@ public class RickAndMortyService: IRickAndMortyService
         
        
         
-        private async Task<string> GetLocationIdByOriginName(string originName)
-        {
-            var builder = new UriBuilder("https://rickandmortyapi.com/api/location");
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query["name"] = originName;
-            builder.Query = query.ToString();
-            var url = builder.ToString();
-            var client = _httpClientFactory.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(false);
-            var str = await response.Content.ReadAsStringAsync();
-            var dynamicObject = JsonConvert.DeserializeObject<dynamic>(str)!;
-            var locationCode = dynamicObject["results"][0]["id"].ToString();
-            return Convert.ToString(locationCode);
-        }
+    
 
         public   async Task<Person> GetPersonByName(string personName,bool includeOrigin=false)
         {
             var builder = new UriBuilder("https://rickandmortyapi.com/api/character");
             var query = HttpUtility.ParseQueryString(builder.Query);
-
             query["name"] = personName;
 
             builder.Query = query.ToString();
@@ -55,20 +41,29 @@ public class RickAndMortyService: IRickAndMortyService
 
             var str = await response.Content.ReadAsStringAsync();
             var dynamicObject = JsonConvert.DeserializeObject<dynamic>(str)!;
+            
             var results = (JArray)dynamicObject["results"];
+            
+            var locationBuilder = new UriBuilder(results[0]["origin"]["url"].ToString());
+            var locationUrl = locationBuilder.ToString();
+            HttpResponseMessage locationResponse = await client.GetAsync(locationUrl).ConfigureAwait(false);
+            var locationStr = await locationResponse.Content.ReadAsStringAsync();
+            var locationDynamicObject = JsonConvert.DeserializeObject<dynamic>(locationStr)!;
+            var locationResults = locationDynamicObject;
+            
             var toReturn = new Person
             {
-                Id = Convert.ToInt32(results[0]["id"]),
                 name = results[0]["name"]!.ToString(),
                 status = results[0]["status"]!.ToString(),
                 species = results[0]["species"]!.ToString(),
                 type = results[0]["type"]!.ToString(),
+                gender = results[0]["gender"].ToString(),
                 origin = new Origin()
                 {
                     name = results[0]["origin"]["name"]!.ToString(),
-                    url = results[0]["origin"]["url"]!.ToString(),
+                    type = locationResults["type"].ToString(),
+                    dimension = locationResults["dimension"].ToString(),
                 },
-                episode = results[0]["episode"]!.Values<string>().ToList()!
             };
             return toReturn;
         }
@@ -88,7 +83,6 @@ public class RickAndMortyService: IRickAndMortyService
             var str = await response.Content.ReadAsStringAsync();
             var dynamicObject = JsonConvert.DeserializeObject<dynamic>(str)!;
             var episodeCode = dynamicObject["results"][0]["id"].ToString();
-            
             return Convert.ToString(episodeCode);
         }
     }

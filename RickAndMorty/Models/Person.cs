@@ -2,7 +2,6 @@
 {
     public class Person
     {
-        public int Id { get; set; }
         public string name { get; set; }
         public string status { get; set; }
         public string species { get; set; }
