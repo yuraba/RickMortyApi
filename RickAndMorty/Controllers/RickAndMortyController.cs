@@ -22,8 +22,12 @@ public class RickAndMortyController : Controller
     public async Task<IActionResult> CheckByNameAndEpisode(string personName, string episodeName)
     {
         var result = await _requestCache.GetData(personName, episodeName);
+        if (result==CheckPersonResult.NotFound)
+        {
+            return NotFound();
+        }
         var toReturn = result.ToString();
-        return Content(toReturn);
+        return Content(toReturn == "True" ? "true" : "false");
     }
 
     [HttpGet]

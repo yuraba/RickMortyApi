@@ -12,16 +12,16 @@ public class RickAndMortyService: IRickAndMortyService
         {
             this._httpClientFactory = _httpClientFactory;
         }
-        public async Task<bool> checkPersonInEpisode(string personName, string episodeName)
+        public async Task<CheckPersonResult> checkPersonInEpisode(string personName, string episodeName)
         {
             var person = await GetPersonByName(personName);
             var episodeId = await GetEpisodeIdByName(episodeName);
             if (episodeId=="Episode Not Found" || person == null)
             {
-                return false;
+                return CheckPersonResult.NotFound;
             }
             var episodeUrl = $"https://rickandmortyapi.com/api/episode/{episodeId}";
-            return person.episode.Contains(episodeUrl);
+            return person.episode.Contains(episodeUrl) ? CheckPersonResult.True : CheckPersonResult.False;
         }
 
         private async Task<Origin> GetDimensionAndType(string originUrl)

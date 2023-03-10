@@ -4,6 +4,6 @@ namespace RickAndMorty.Cache;
 
 public interface IRequestCache
 {
-    public  Task<bool> GetData(string personName, string episodeName);
+    public  Task<CheckPersonResult> GetData(string personName, string episodeName);
     public  Task<Person> GetData(string personName);
 }

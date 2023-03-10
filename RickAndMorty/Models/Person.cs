@@ -2,6 +2,12 @@
 
 namespace upswotProj.Models
 {
+    public enum CheckPersonResult
+    {
+        False=0,
+        True=1,
+        NotFound = 2
+    }
     public class Person
     {
         public string name { get; set; }

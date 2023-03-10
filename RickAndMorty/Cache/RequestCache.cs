@@ -15,10 +15,10 @@ public class RequestCache : IRequestCache
         this._rickAndMortyService = _rickAndMortyService;
     }
 
-    public async Task<bool> GetData(string personName, string episodeName)
+    public async Task<CheckPersonResult> GetData(string personName, string episodeName)
     {
         var key = personName + episodeName;
-        if (!cache.TryGetValue(key, out bool response))
+        if (!cache.TryGetValue(key, out CheckPersonResult response))
         {
             response = await _rickAndMortyService.checkPersonInEpisode(personName, episodeName);
             cache.Set(key, response, DateTimeOffset.Now.AddDays(7));
